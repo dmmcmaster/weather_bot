@@ -27,8 +27,8 @@ const createResMessage = (orgId, mbody, mtype) => {
   return message
 }
 
-const convertFarenheit = (temp) => {
-  var conv = (5/9) * (temp - 273.15) + 32
+const convertFarenheit = (temp) => { //why does this api give me temps in kelvin????
+  var conv = ((5/9) * (temp - 273.15)) + 32
   return Math.floor(conv)
 }
 
@@ -39,10 +39,11 @@ const handleWeather = (lat, lon, city, orgId, convId) => {
         const obj = JSON.parse(res.text)
 
         const temp = JSON.stringify(convertFarenheit(obj.main.temp))
-        const feel = JSON.stringify(obj.weather[0]['description'])
+        const min_temp = JSON.stringify(convertFarenheit(obj.main.temp_min))
+        const max_temp = JSON.stringify(convertFarenheit(obj.main.temp_max))
+        const feel = JSON.stringify(obj.weather[0]['description']).replace(/['"]+/g, '')
 
-        //const ts = JSON.stringify(obj.weather[0]['description'])
-        const message = `<p>It is currently ${temp} degrees and ${feel}</p>`
+        const message = `<p>It is currently ${temp} degrees and ${feel}. The high for the day is ${max_temp} degrees and the low is ${min_temp} degrees.</p>`
 
         sendMessage(convId, createResMessage(orgId, message, 'private_note'))
     })
@@ -95,9 +96,9 @@ app.use(bodyParser.json())
 app.listen(process.env.PORT || 3000, () => console.log('Example app listening on port 3000!'))
 app.post('/event_api', (req, res) => {
   const ip_addr = getClientIP(req)
-  // if (req.body.type === 'new_conversation') {
-  //   handleNewConversation(req.body.orgId, req.body.data, ip_addr)
-  // }
+  if (req.body.type === 'new_conversation') {
+    handleNewConversation(req.body.orgId, req.body.data, ip_addr)
+  }
   if(req.body.type === 'new_message'){
     handleWeatherMessage(req.body.orgId, req.body.data, ip_addr)
   }
