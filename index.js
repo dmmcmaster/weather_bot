@@ -33,7 +33,8 @@ const handleWeather = (lat, lon, city, orgId, convId) => {
     .then((res) => {
         //const temp = res.main.temp
         //const feel = res.weather.description
-        const message = `<p>It is currently ${res}</p>` // degrees and ${feel} in ${city}</p>''
+        const ts = JSON.stringify(res)
+        const message = `<p>It is currently ${ts}</p>` // degrees and ${feel} in ${city}</p>''
 
         sendMessage(convId, createResMessage(orgId, message, 'private_prompt'))
     })
