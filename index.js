@@ -31,10 +31,10 @@ const handleWeather = (lat, lon, city, orgId, convId) => {
   const weather_url = WEATHER_BASE_URL+`&lat=${lat}&lon=${lon}`
   return request.get(weather_url)
     .then((res) => {
-        //const temp = res.main.temp
-        //const feel = res.weather.description
-        const ts = JSON.stringify(res)
-        const message = `<p>It is currently ${ts}</p>` // degrees and ${feel} in ${city}</p>''
+        const temp = res.text.main.temp
+        const feel = res.text.weather.description
+        //const ts = JSON.stringify(res)
+        const message = `<p>It is currently ${temp} degrees and ${feel}</p>''
 
         sendMessage(convId, createResMessage(orgId, message, 'private_note'))
     })
