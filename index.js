@@ -9,7 +9,7 @@ const WEATHER_KEY=process.env.WEATHER_API_KEY  //https://openweathermap.org/curr
 const DRIFT_TOKEN=process.env.DRIFT_TOKEN
 // URL BASES
 const CONVERSATION_API_BASE = 'https://driftapi.com/v1/conversations'
-const WEATHER_BASE_URL='https://api.openweathermap.org/data/2.5/weather?APPID='+WEATHER_KEY
+const WEATHER_BASE_URL=`https://api.openweathermap.org/data/2.5/weather?APPID=${WEATHER_KEY}`
 
 //HELPER METHODS
 const getClientIP = (req) => {
