@@ -68,27 +68,9 @@ const handleNewConversation = (orgId, data, ip_addr) => {
     return handleWeather(lat, lon, city, orgId, data.conversationId)
 }
 //SET UP APP
-function sendFile(res, filename, type) {
-
-  type = type || 'text/html'
-
-  res.writeHead(200, {'Content-type': type})
-
-  var stream = fs.createReadStream(filename)
-
-  stream.on('data', function(data) {
-    res.write(data);
-  })
-
-  stream.on('end', function(data) {
-    res.end();
-    return;
-  })
-}
 
 app.use(bodyParser.json())
 app.listen(process.env.PORT || 3000, () => console.log('Example app listening on port 3000!'))
-app.get('/', (req, res) => sendFile(res, 'home.html'))
 app.post('/event_api', (req, res) => {
 
   if (req.body.type === 'new_conversation') {
