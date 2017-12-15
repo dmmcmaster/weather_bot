@@ -68,15 +68,17 @@ const handleNewConversation = (orgId, data, ip_addr) => {
 }
 
 const handleWeatherMessage = (orgId, data, ip_addr) => {
-  const body = data.body
-  const conversationId = data.conversationId
-  if (body.startsWith('/weather')) {
-    const geo = geoip.lookup(ip_addr)
-    const lat = geo.ll[0]
-    const lon = geo.ll[1]
-    const city = geo.city
-    sendMessage(conversationId, createDeleteMessage(orgId, data.id))
-    return handleWeather(lat, lon, city, orgId, conversationId)
+  if (data.type === 'private_note') {
+    const mbody = data.body
+    const conversationId = data.conversationId
+    if (mbody.startsWith('/weather')) {
+      const geo = geoip.lookup(ip_addr)
+      const lat = geo.ll[0]
+      const lon = geo.ll[1]
+      const city = geo.city
+      sendMessage(conversationId, createDeleteMessage(orgId, data.id))
+      return handleWeather(lat, lon, city, orgId, conversationId)
+    }
   }
 }
 
