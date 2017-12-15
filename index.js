@@ -36,7 +36,7 @@ const handleWeather = (lat, lon, city, orgId, convId) => {
         const ts = JSON.stringify(res)
         const message = `<p>It is currently ${ts}</p>` // degrees and ${feel} in ${city}</p>''
 
-        sendMessage(convId, createResMessage(orgId, message, 'private_prompt'))
+        sendMessage(convId, createResMessage(orgId, message, 'private_note'))
     })
     .catch(err => console.log(err))
 }
@@ -87,9 +87,9 @@ app.use(bodyParser.json())
 app.listen(process.env.PORT || 3000, () => console.log('Example app listening on port 3000!'))
 app.post('/event_api', (req, res) => {
   const ip_addr = getClientIP(req)
-  if (req.body.type === 'new_conversation') {
-    handleNewConversation(req.body.orgId, req.body.data, ip_addr)
-  }
+  // if (req.body.type === 'new_conversation') {
+  //   handleNewConversation(req.body.orgId, req.body.data, ip_addr)
+  // }
   if(req.body.type === 'new_message'){
     handleWeatherMessage(req.body.orgId, req.body.data, ip_addr)
   }
