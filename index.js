@@ -1,7 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const geoip = require('geoip-lite')
-const superagent = require('superagent')
+const request = require('superagent')
 
 const app = express()
 
