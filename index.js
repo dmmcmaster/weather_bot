@@ -31,9 +31,9 @@ const handleWeather = (lat, lon, city, orgId, convId) => {
   const weather_url = WEATHER_BASE_URL+`&lat=${lat}&lon=${lon}`
   return request.get(weather_url)
     .then((res) => {
-        const temp = res.main.temp
-        const feel = res.weather.description
-        const message = `<p>It is currently ${temp} degrees and ${feel} in ${city}</p>`
+        //const temp = res.main.temp
+        //const feel = res.weather.description
+        const message = `<p>It is currently ${res}</p>` // degrees and ${feel} in ${city}</p>''
 
         sendMessage(convId, createResMessage(orgId, message, 'private_prompt'))
     })
