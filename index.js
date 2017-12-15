@@ -20,6 +20,13 @@ const getClientIP = (req) => {
 //   var geo = geoip.lookup(ip)
 //   return geo.ll
 // }
+const createMessage = (orgId, body, type) => {
+  return {
+    'orgId': orgId,
+    'body': body,
+    'type': type,
+  }
+}
 
 const handleWeather = (lat, lon, city, orgId, convId) => {
   var url = WEATHER_BASE_URL+`&lat=${lat}&lon=${lon}`
@@ -29,7 +36,7 @@ const handleWeather = (lat, lon, city, orgId, convId) => {
         const feel = res.weather.description
         const message = `It is currently ${temp} degrees and ${feel} in ${city}`
 
-        sendMessage(convId, message)
+        sendMessage(convId, createMessage(orgId, message, 'chat'))
     })
     .catch(err => console.log(err))
 }
