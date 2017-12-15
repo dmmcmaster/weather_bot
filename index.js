@@ -34,22 +34,22 @@ const handleWeather = (lat, lon, city, orgId, convId) => {
     .then((res) => {
         const temp = res.main.temp
         const feel = res.weather.description
-        const message = `It is currently ${temp} degrees and ${feel} in ${city}`
+        const message = `<p>It is currently ${temp} degrees and ${feel} in ${city}</p>`
 
         sendMessage(convId, createMessage(orgId, message, 'chat'))
     })
     .catch(err => console.log(err))
 }
 //HANDLE METHODS
-// const createDeleteMessage = (orgId, idToDelete) => {
-//    return {
-//     orgId,
-//     type: 'edit',
-//     editedMessageId: idToDelete,
-//     editType: 'delete',
-//     body: ''
-//    }
-// }
+const createDeleteMessage = (orgId, idToDelete) => {
+   return {
+    orgId,
+    type: 'edit',
+    editedMessageId: idToDelete,
+    editType: 'delete',
+    body: ''
+   }
+}
 
 const sendMessage = (conversationId, message) => {
   return request.post(CONVERSATION_API_BASE + `/${conversationId}/messages`)
@@ -67,15 +67,27 @@ const handleNewConversation = (orgId, data, ip_addr) => {
 
     return handleWeather(lat, lon, city, orgId, data.conversationId)
 }
+
+const handleWeatherMessage = (orgId, data, ip_addr) => {
+  const body = data.body
+  const conversationId = data.conversationId
+  if (body.startsWith('/weather')) {
+    sendMessage(conversationId, createDeleteMessage(orgId, data.id))
+    return getGifAndSendMessage(orgId, conversationId, conversationId, searchParam, data.id)
+  }
+}
 //SET UP APP
 
 app.use(bodyParser.json())
 app.listen(process.env.PORT || 3000, () => console.log('Example app listening on port 3000!'))
 app.post('/event_api', (req, res) => {
+  const ip_addr = getClientIP(req)
 
   if (req.body.type === 'new_conversation') {
-    var ip_addr = getClientIP(req)
     handleNewConversation(req.body.orgId, req.body.data, ip_addr)
+  }
+  if(req.body.type === 'new_message'){
+    handleWeatherMessage(req.body.orgId, req.body.data, ip_addr)
   }
 
   return res.send('ok')
