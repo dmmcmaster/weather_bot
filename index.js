@@ -27,15 +27,22 @@ const createResMessage = (orgId, mbody, mtype) => {
   return message
 }
 
+const convertFarenheit = (temp) => {
+  var conv = (5/9) * (temp - 273.15) + 32
+  return Math.floor(conv)
+}
+
 const handleWeather = (lat, lon, city, orgId, convId) => {
   const weather_url = WEATHER_BASE_URL+`&lat=${lat}&lon=${lon}`
   return request.get(weather_url)
     .then((res) => {
-        // const temp = res.text.main.temp
-        // const feel = res.text.weather.description
         const obj = JSON.parse(res.text)
-        const ts = JSON.stringify(obj.weather[0]['description'])
-        const message = `<p>It is currently ${ts}` // degrees and ${feel}</p>`
+
+        const temp = JSON.stringify(convertFarenheit(obj.main.temp))
+        const feel = JSON.stringify(obj.weather[0]['description'])
+
+        //const ts = JSON.stringify(obj.weather[0]['description'])
+        const message = `<p>It is currently ${temp} degrees and ${feel}</p>`
 
         sendMessage(convId, createResMessage(orgId, message, 'private_note'))
     })
