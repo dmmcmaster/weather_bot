@@ -1,0 +1,26 @@
+{
+  "name": "weather_bot",
+  "version": "1.0.0",
+  "description": "Bot to tell the current weather of your current location",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmmcmaster/weather_bot.git"
+  },
+  "author": "Derek McMaster",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dmmcmaster/weather_bot/issues"
+  },
+  "homepage": "https://github.com/dmmcmaster/weather_bot#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "geoip-lite": "^1.2.1",
+    "superagent": "^3.8.2"
+  }
+}
