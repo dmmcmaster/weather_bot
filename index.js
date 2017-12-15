@@ -1,46 +1,45 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const geoip = require('geoip-lite') //https://github.com/bluesmoon/node-geoip
+const geoip = require('geoip-lite')
 const superagent = require('superagent')
 
 const app = express()
-//Environment Vars
-const WEATHER_KEY=process.env.WEATHER_API_KEY  //https://openweathermap.org/current
+
+const WEATHER_KEY=process.env.WEATHER_API_KEY
 const DRIFT_TOKEN=process.env.DRIFT_TOKEN
-// URL BASES
+
 const CONVERSATION_API_BASE = 'https://driftapi.com/v1/conversations'
 const WEATHER_BASE_URL=`https://api.openweathermap.org/data/2.5/weather?APPID=${WEATHER_KEY}`
 
-//HELPER METHODS
 const getClientIP = (req) => {
-  return req.header('x-forwarded-for') || req.connection.remoteAddress;
+  return req.headers['x-forwarded-for'].split(',').pop() ||
+         req.connection.remoteAddress ||
+         req.socket.remoteAddress ||
+         req.connection.socket.remoteAddress
 }
 
-// const getCoordinates = (ip) => {
-//   var geo = geoip.lookup(ip)
-//   return geo.ll
-// }
-const createMessage = (orgId, body, type) => {
-  return {
+const createResMessage = (orgId, mbody, mtype) => {
+  const message = {
     'orgId': orgId,
-    'body': body,
-    'type': type,
+    'body': mbody,
+    'type': mtype,
   }
+  return message
 }
 
 const handleWeather = (lat, lon, city, orgId, convId) => {
-  var url = WEATHER_BASE_URL+`&lat=${lat}&lon=${lon}`
-  return request.get(url)
+  const weather_url = WEATHER_BASE_URL+`&lat=${lat}&lon=${lon}`
+  return request.get(weather_url)
     .then((res) => {
         const temp = res.main.temp
         const feel = res.weather.description
         const message = `<p>It is currently ${temp} degrees and ${feel} in ${city}</p>`
 
-        sendMessage(convId, createMessage(orgId, message, 'chat'))
+        sendMessage(convId, createResMessage(orgId, message, 'private_prompt'))
     })
     .catch(err => console.log(err))
 }
-//HANDLE METHODS
+
 const createDeleteMessage = (orgId, idToDelete) => {
    return {
     orgId,
@@ -72,23 +71,24 @@ const handleWeatherMessage = (orgId, data, ip_addr) => {
   const body = data.body
   const conversationId = data.conversationId
   if (body.startsWith('/weather')) {
+    const geo = geoip.lookup(ip_addr)
+    const lat = geo.ll[0]
+    const lon = geo.ll[1]
+    const city = geo.city
     sendMessage(conversationId, createDeleteMessage(orgId, data.id))
-    return getGifAndSendMessage(orgId, conversationId, conversationId, searchParam, data.id)
+    return handleWeather(lat, lon, city, orgId, conversationId)
   }
 }
-//SET UP APP
 
 app.use(bodyParser.json())
 app.listen(process.env.PORT || 3000, () => console.log('Example app listening on port 3000!'))
 app.post('/event_api', (req, res) => {
   const ip_addr = getClientIP(req)
-
   if (req.body.type === 'new_conversation') {
     handleNewConversation(req.body.orgId, req.body.data, ip_addr)
   }
   if(req.body.type === 'new_message'){
     handleWeatherMessage(req.body.orgId, req.body.data, ip_addr)
   }
-
   return res.send('ok')
 })
