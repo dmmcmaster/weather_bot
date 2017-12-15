@@ -68,8 +68,27 @@ const handleNewConversation = (orgId, data, ip_addr) => {
     return handleWeather(lat, lon, city, orgId, data.conversationId)
 }
 //SET UP APP
+function sendFile(res, filename, type) {
+
+  type = type || 'text/html'
+
+  res.writeHead(200, {'Content-type': type})
+
+  var stream = fs.createReadStream(filename)
+
+  stream.on('data', function(data) {
+    res.write(data);
+  })
+
+  stream.on('end', function(data) {
+    res.end();
+    return;
+  })
+}
+
 app.use(bodyParser.json())
 app.listen(process.env.PORT || 3000, () => console.log('Example app listening on port 3000!'))
+app.get('/', (req, res) => sendFile(res, 'home.html'))
 app.post('/event_api', (req, res) => {
 
   if (req.body.type === 'new_conversation') {
@@ -79,26 +98,3 @@ app.post('/event_api', (req, res) => {
 
   return res.send('ok')
 })
-
-//<script>
-!function() {
-  var t;
-  if (t = window.driftt = window.drift = window.driftt || [], !t.init) return t.invoked ? void (window.console && console.error && console.error("Drift snippet included twice.")) : (t.invoked = !0,
-  t.methods = [ "identify", "config", "track", "reset", "debug", "show", "ping", "page", "hide", "off", "on" ],
-  t.factory = function(e) {
-    return function() {
-      var n;
-      return n = Array.prototype.slice.call(arguments), n.unshift(e), t.push(n), t;
-    };
-  }, t.methods.forEach(function(e) {
-    t[e] = t.factory(e);
-  }), t.load = function(t) {
-    var e, n, o, i;
-    e = 3e5, i = Math.ceil(new Date() / e) * e, o = document.createElement("script"),
-    o.type = "text/javascript", o.async = !0, o.crossorigin = "anonymous", o.src = "https://js.driftt.com/include/" + i + "/" + t + ".js",
-    n = document.getElementsByTagName("script")[0], n.parentNode.insertBefore(o, n);
-  });
-}();
-drift.SNIPPET_VERSION = '0.3.1';
-drift.load('6m8kenu769iv');
-//</script>
